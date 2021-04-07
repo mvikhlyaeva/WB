@@ -17,10 +17,10 @@ const cartTableGoods = document.querySelector('.cart-table__goods');
 const cartTableTotal = document.querySelector('.card-table__total');
 const cartCount = document.querySelector('.cart-count');
 
-const getGoods = async function (){
+const getGoods = async function () {
 	console.log('getGoods');
-	const result =   await fetch('db/db.json');  //адресс сервера
-	if (!result.ok){
+	const result = await fetch('db/db.json'); //адресс сервера
+	if (!result.ok) {
 		throw "Ошибка" + result.status;
 	}
 	console.log(result);
@@ -29,13 +29,18 @@ const getGoods = async function (){
 
 const cart = {
 	cartGoods: [],
-	renderCart(){
-		cartTableGoods.textContent="";
-		cart.cartGoods.forEach(({id, name, price, count})=>{
+	renderCart() {
+		cartTableGoods.textContent = "";
+		cart.cartGoods.forEach(({
+			id,
+			name,
+			price,
+			count
+		}) => {
 			const trGood = document.createElement('tr');
 			trGood.className = 'cart-item';
 			trGood.dataset.id = id;
-			trGood.innerHTML=`
+			trGood.innerHTML = `
 				<td>${name}</td>
 				<td>${price}$</td>
 				<td><button class="cart-btn-minus">-</button></td>
@@ -44,62 +49,70 @@ const cart = {
 				<td>${price*count}$</td>
 				<td><button class="cart-btn-delete">x</button></td>
 				`;
-			cartTableGoods.append(trGood);	
+			cartTableGoods.append(trGood);
 		})
-		const totalPrice = this.cartGoods.reduce((sum, {price, count})=>{
-			return sum + price*count;
+		const totalPrice = this.cartGoods.reduce((sum, {
+			price,
+			count
+		}) => {
+			return sum + price * count;
 		}, 0);
 		console.log(cartTableTotal);
-		cartTableTotal.textContent=totalPrice + '$';
+		cartTableTotal.textContent = totalPrice + '$';
 	},
-	deleteGoods (id){
+	deleteGoods(id) {
 		var countForDelite;
-		this.cartGoods = this.cartGoods.filter((arr) =>  {
-			if (arr.id==id) {
+		this.cartGoods = this.cartGoods.filter((arr) => {
+			if (arr.id == id) {
 				this.cartCount(-arr.count);
 				console.log(-arr.count);
-			}
-			else return true;
-	})
+			} else return true;
+		})
 		cart.renderCart();
 	},
-	minusGood(id){for(const item of this.cartGoods){
-			if (item.id == id) item.count --;
-			if(item.count==0) this.deleteGoods(id);
+	minusGood(id) {
+		for (const item of this.cartGoods) {
+			if (item.id == id) item.count--;
+			if (item.count == 0) this.deleteGoods(id);
 		}
 		this.cartCount(-1);
 		cart.renderCart()
 	},
-	plusGood (id){
-		for(const item of this.cartGoods){
-			if (item.id == id) item.count ++;
+	plusGood(id) {
+		for (const item of this.cartGoods) {
+			if (item.id == id) item.count++;
 		}
 		cart.renderCart();
 		this.cartCount(1);
 	},
-	addCartGoods (id){
-		const goodItem = this.cartGoods.find(item => item.id ==id);
+	addCartGoods(id) {
+		const goodItem = this.cartGoods.find(item => item.id == id);
 		if (goodItem) this.plusGood(id)
-		else {getGoods()
-			.then(data => data.find(item => item.id == id))
-			.then(({id, name,price}) => this.cartGoods.push({
-				id,
-				name,
-				price,
-				count: 1,
-			})  )
+		else {
+			getGoods()
+				.then(data => data.find(item => item.id == id))
+				.then(({
+					id,
+					name,
+					price
+				}) => this.cartGoods.push({
+					id,
+					name,
+					price,
+					count: 1,
+				}))
 			this.cartCount(1);
 		}
 	},
-	cartCount(n){
+	cartCount(n) {
 		//if (cartCount.textContent=="") {cartCount.textContent=n; console.log("ff");}
 		//else {
-			var count = cartCount.textContent;
-			console.log(count);
-			cartCount.textContent = +count + n;
+		var count = cartCount.textContent;
+		console.log(count);
+		cartCount.textContent = +count + n;
 		//}
 	},
-	cartClear(){
+	cartClear() {
 		cart.cartGoods.length = 0;
 		cartCount.textContent = '';
 	}
@@ -112,17 +125,17 @@ document.body.addEventListener('click', event => {
 	const viewAllAccessories = event.target.closest('.view-all-accessories');
 	const viewAllShoes = event.target.closest('.view-all-shoes');
 
-	if (addToCart){
+	if (addToCart) {
 		cart.addCartGoods(addToCart.dataset.id);
 	}
-	if (viewAllAccessories){
+	if (viewAllAccessories) {
 		filterCadrs('category', 'Accessories');
 		document.querySelector('body').scrollIntoView({
 			behavior: 'smooth',
 			block: 'start'
 		});
 	}
-	if (viewAllShoes){
+	if (viewAllShoes) {
 		filterCadrs('category', 'Shoes');
 		document.querySelector('body').scrollIntoView({
 			behavior: 'smooth',
@@ -132,12 +145,12 @@ document.body.addEventListener('click', event => {
 
 })
 
-const openModal = function(){
+const openModal = function () {
 	modalCart.classList.add('show');
 	cart.renderCart();
 }
 
-const closeModal = function(){
+const closeModal = function () {
 	modalCart.classList.remove('show');
 }
 
@@ -161,7 +174,7 @@ cartTableGoods.addEventListener('click', event => {
 buttonCart.addEventListener('click', openModal);
 
 modalCart.addEventListener('click', (event) => {
-	if(event.target.classList.contains('overlay') || event.target.classList.contains('modal-close')) {
+	if (event.target.classList.contains('overlay') || event.target.classList.contains('modal-close')) {
 		closeModal();
 	}
 })
@@ -169,26 +182,26 @@ modalCart.addEventListener('click', (event) => {
 //scrool smooth плавный скрол
 
 {
-const scroollLinks = document.querySelectorAll('a.scroll-link');
+	const scroollLinks = document.querySelectorAll('a.scroll-link');
 
-for(let i=0;i< scroollLinks.length;i++){
-	scroollLinks[i].addEventListener('click', (event) => {
-		event.preventDefault();
-		const id = scroollLinks[i].getAttribute('href');
-		document.querySelector(id).scrollIntoView({
-			behavior: 'smooth',
-			block: 'start'
-		});
-	})
-}
+	for (let i = 0; i < scroollLinks.length; i++) {
+		scroollLinks[i].addEventListener('click', (event) => {
+			event.preventDefault();
+			const id = scroollLinks[i].getAttribute('href');
+			document.querySelector(id).scrollIntoView({
+				behavior: 'smooth',
+				block: 'start'
+			});
+		})
+	}
 }
 
 
 //goods товары
 
-const createCard = function(objCadr){
+const createCard = function (objCadr) {
 	const card = document.createElement('div');
-	card.className ='col-lg-3 col-sm-6';
+	card.className = 'col-lg-3 col-sm-6';
 	card.innerHTML = `<div class="goods-card">
 	${objCadr.label ? `<span class="label">${objCadr.label}</span>` : ''}
 	<img src="db/${objCadr.img}" alt="${objCadr.name}" class="goods-image">
@@ -198,17 +211,17 @@ const createCard = function(objCadr){
 		<span class="button-price">$${objCadr.price}</span>
 	</button>
 </div>`;
-return card;
+	return card;
 }
 
-const renderCards = function(data){
+const renderCards = function (data) {
 	longGoodsList.textContent = '';
-	const cards = data.map(createCard);    //data перебирается через map
-	longGoodsList.append(...cards);        //...перечисляет массив через запятую
+	const cards = data.map(createCard); //data перебирается через map
+	longGoodsList.append(...cards); //...перечисляет массив через запятую
 	document.body.classList.add('show-goods');
 }
 
-more.addEventListener('click', function(event) {
+more.addEventListener('click', function (event) {
 	event.preventDefault();
 
 	getGoods().then(renderCards);
@@ -220,56 +233,53 @@ more.addEventListener('click', function(event) {
 });
 
 
-const filterCadrs = function(field, value){
+const filterCadrs = function (field, value) {
 	console.log('filterCards')
 	getGoods()
-		.then((data) => {	
-			return data.filter((good) => good[field] === value)//Если вернется истина, товар запишется
+		.then((data) => {
+			return data.filter((good) => good[field] === value) //Если вернется истина, товар запишется
 		})
 		.then(renderCards);
 }
 
 
-navigationLink.forEach(function(link){
-	link.addEventListener('click', function(event){
+navigationLink.forEach(function (link) {
+	link.addEventListener('click', function (event) {
 		event.preventDefault();
 		const field = link.dataset.field;
 		//console.log(field);
 		const value = link.textContent;
 		if (value == 'All') {
 			getGoods().then(renderCards);
-		}
-		else filterCadrs(field, value);
+		} else filterCadrs(field, value);
 	})
 })
 
 const modalForm = document.querySelector('.modal-form');
 
-const postData = async function(datauser) {
+const postData = async function (datauser) {
 	//console.log(datauser);
-	result = await fetch('server.php',{
+	result = await fetch('server.php', {
 		method: 'POST',
 		body: datauser,
 	})
 	return result;
 }
 
-modalForm.addEventListener('submit', event =>{
-    event.preventDefault();
+modalForm.addEventListener('submit', event => {
+	event.preventDefault();
 	const formData = new FormData(modalForm);
 	formData.append('cart', JSON.stringify(cart.cartGoods));
 	postData(formData)
-		.then( response => {
-			if (!response.ok){
+		.then(response => {
+			if (!response.ok) {
 				throw new Error(response.status);
-			}
-			else alert('Ваш заказ успешно отправлен');
+			} else alert('Ваш заказ успешно отправлен');
 		})
-		.catch( error => alert("Произошла ошибка"))
-		.finally(()=>{
+		.catch(error => alert("Произошла ошибка"))
+		.finally(() => {
 			closeModal();
 			modalForm.reset();
 			cart.cartClear();
 		})
 })
-
